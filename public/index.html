@@ -37,7 +37,8 @@
 
   --f-title:    'Bebas Neue', system-ui, sans-serif;
   --f-body:     'Montserrat', system-ui, sans-serif;
-  --f-mono:     'JetBrains Mono', ui-monospace, monospace;
+  /* No más mono · usamos Montserrat con tracking para data/labels */
+  --f-mono:     'Montserrat', system-ui, sans-serif;
 
   --ease:       cubic-bezier(0.19, 1, 0.22, 1);
   color-scheme: dark;
@@ -50,8 +51,7 @@ button { font: inherit; color: inherit; cursor: pointer; background: none; borde
 input { font: inherit; color: inherit; }
 ::selection { background: var(--cyan); color: var(--text); }
 
-/* BG */
-.bg-grid { position: fixed; inset: 0; z-index: 1; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse 100% 90% at center, black 30%, transparent); -webkit-mask-image: radial-gradient(ellipse 100% 90% at center, black 30%, transparent); }
+/* BG · sin grid · solo orbs suaves */
 .bg-orb-c { position: fixed; top: -25%; right: -15%; width: 70vw; height: 70vw; max-width: 1100px; max-height: 1100px; border-radius: 50%; background: radial-gradient(ellipse, rgba(18,128,155,0.24), transparent 60%); filter: blur(90px); pointer-events: none; z-index: 0; }
 .bg-orb-y { position: fixed; bottom: -25%; left: -15%; width: 55vw; height: 55vw; max-width: 900px; max-height: 900px; border-radius: 50%; background: radial-gradient(ellipse, rgba(229,187,85,0.10), transparent 60%); filter: blur(90px); pointer-events: none; z-index: 0; }
 
@@ -71,11 +71,14 @@ input { font: inherit; color: inherit; }
 @keyframes pulse { 50% { opacity: 0.35; } }
 @media (max-width: 540px) { .topbar-right .live { display: none; } }
 
-/* Hero */
-.hero { position: relative; z-index: 5; padding: clamp(60px, 9vh, 110px) clamp(20px, 5vw, 60px) clamp(40px, 6vh, 80px); max-width: 1180px; margin: 0 auto; text-align: center; overflow: hidden; }
-.eyebrow { display: inline-flex; align-items: center; gap: 10px; padding: 7px 16px; background: rgba(229,187,85,0.10); border: 1px solid rgba(229,187,85,0.36); font-family: var(--f-mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.26em; color: var(--yellow); text-transform: uppercase; border-radius: 100px; margin-bottom: 32px; }
+/* Hero · órbita LLMs FLOTANDO alrededor del título */
+.hero { position: relative; z-index: 5; padding: clamp(60px, 9vh, 110px) clamp(20px, 5vw, 60px) clamp(40px, 6vh, 80px); max-width: 1280px; margin: 0 auto; text-align: center; overflow: visible; }
+.hero-canvas { position: relative; }
+
+/* Pre-eyebrow ahora con Bebas + Montserrat (no mono) */
+.eyebrow { display: inline-flex; align-items: center; gap: 10px; padding: 8px 18px; background: rgba(229,187,85,0.10); border: 1px solid rgba(229,187,85,0.36); font-family: var(--f-body); font-size: 12px; font-weight: 700; letter-spacing: 0.10em; color: var(--yellow); text-transform: uppercase; border-radius: 100px; margin-bottom: 36px; }
 .eyebrow::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--yellow); box-shadow: 0 0 10px var(--yellow); animation: pulse 1.8s infinite; }
-h1 { font-family: var(--f-title); font-weight: 400; font-size: clamp(3rem, 9vw, 8rem); line-height: 0.92; letter-spacing: 0.005em; margin-bottom: 28px; text-transform: uppercase; }
+h1 { font-family: var(--f-title); font-weight: 400; font-size: clamp(3rem, 9vw, 8rem); line-height: 0.92; letter-spacing: 0.005em; margin-bottom: 28px; text-transform: uppercase; position: relative; z-index: 5; }
 h1 .em { color: var(--cyan-bright); }
 h1 .em-y { color: var(--yellow); }
 .hero-sub { font-size: clamp(1rem, 1.4vw, 1.18rem); line-height: 1.6; color: var(--text-soft); max-width: 66ch; margin: 0 auto 44px; font-weight: 400; }
@@ -260,24 +263,36 @@ h1 .em-y { color: var(--yellow); }
 .partner-row img:hover { opacity: 1; transform: scale(1.05); }
 @media (max-width: 600px) { .partner-row img { height: 24px; } .partner-row { gap: 12px; padding: 10px 16px; } }
 
-/* === Orbita floating logos (LLMs + Google) === */
-.orbita-wrap { position: relative; max-width: 880px; margin: 50px auto 0; padding: 30px 0; min-height: 240px; }
-.orbita-core { width: 110px; height: 110px; margin: 0 auto; background: linear-gradient(135deg, var(--cyan), var(--yellow)); border-radius: 22px; display: grid; place-items: center; position: relative; box-shadow: 0 20px 50px rgba(18,128,155,0.32); z-index: 2; }
-.orbita-core::before { content: ''; position: absolute; inset: -8px; border: 1.5px solid rgba(18,128,155,0.45); border-radius: 28px; animation: coreBreath 3s ease-in-out infinite; }
-@keyframes coreBreath { 50% { transform: scale(1.06); opacity: 0.5; } }
-.orbita-core strong { font-family: var(--f-title); font-size: 1.6rem; color: var(--bg); letter-spacing: 0.04em; line-height: 1; }
-.orbita-logo { position: absolute; width: 56px; height: 56px; background: #fff; border-radius: 14px; display: grid; place-items: center; box-shadow: 0 12px 28px rgba(0,0,0,0.32); transition: transform 0.3s var(--ease), box-shadow 0.3s; }
-.orbita-logo:hover { transform: scale(1.18) rotate(-3deg); box-shadow: 0 20px 36px rgba(18,128,155,0.32); z-index: 10; }
-.orbita-logo img { max-width: 70%; max-height: 70%; object-fit: contain; }
-@media (max-width: 700px) { .orbita-logo { width: 44px; height: 44px; border-radius: 10px; } .orbita-core { width: 90px; height: 90px; } }
-.orbita-logo.float1 { animation: float1 6s ease-in-out infinite; }
-.orbita-logo.float2 { animation: float2 7s ease-in-out infinite; }
-.orbita-logo.float3 { animation: float3 8s ease-in-out infinite; }
-@keyframes float1 { 50% { transform: translateY(-12px); } }
-@keyframes float2 { 50% { transform: translateY(-16px); } }
-@keyframes float3 { 50% { transform: translateY(-9px); } }
-.orbita-tag { position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%); font-family: var(--f-mono); font-size: 8.5px; letter-spacing: 0.14em; font-weight: 700; color: var(--text-mute); text-transform: uppercase; white-space: nowrap; opacity: 0; transition: opacity 0.25s; pointer-events: none; }
-.orbita-logo:hover .orbita-tag { opacity: 1; }
+/* === Orbita LLMs flotando ALREDEDOR del título hero === */
+.hero-orbita { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+.hero-orbita .o-logo { position: absolute; width: 60px; height: 60px; background: #fff; border-radius: 14px; display: grid; place-items: center; box-shadow: 0 16px 32px rgba(0,0,0,0.32); transition: transform 0.3s var(--ease); pointer-events: auto; }
+.hero-orbita .o-logo:hover { transform: scale(1.16) rotate(-3deg); box-shadow: 0 22px 40px rgba(18,128,155,0.32); z-index: 10; }
+.hero-orbita .o-logo img { max-width: 70%; max-height: 70%; object-fit: contain; }
+
+/* Posicionamiento de cada LLM logo (porcentaje del hero container) */
+.hero-orbita .o1  { top: 12%; left: 4%;    animation: floatA 6s ease-in-out infinite; }
+.hero-orbita .o2  { top: 8%;  right: 6%;   animation: floatB 7s ease-in-out infinite; }
+.hero-orbita .o3  { top: 42%; left: 1%;    animation: floatC 8s ease-in-out infinite; }
+.hero-orbita .o4  { top: 38%; right: 2%;   animation: floatA 6.5s ease-in-out infinite reverse; }
+.hero-orbita .o5  { bottom: 18%; left: 8%; animation: floatB 7.5s ease-in-out infinite; }
+.hero-orbita .o6  { bottom: 22%; right: 10%; animation: floatC 6.8s ease-in-out infinite; }
+.hero-orbita .o7  { top: 22%; left: 15%;   animation: floatA 7.2s ease-in-out infinite reverse; }
+
+@keyframes floatA { 50% { transform: translateY(-14px) rotate(2deg); } }
+@keyframes floatB { 50% { transform: translateY(-18px) rotate(-3deg); } }
+@keyframes floatC { 50% { transform: translateY(-10px) rotate(2deg); } }
+
+@media (max-width: 980px) {
+  .hero-orbita .o-logo { width: 46px; height: 46px; border-radius: 11px; }
+  .hero-orbita .o2, .hero-orbita .o7 { display: none; }
+}
+@media (max-width: 700px) {
+  .hero-orbita .o-logo { width: 38px; height: 38px; border-radius: 10px; }
+  .hero-orbita .o4, .hero-orbita .o6 { display: none; }
+  .hero-orbita .o1  { top: 5%;  left: 3%; }
+  .hero-orbita .o3  { top: 35%; left: -2%; }
+  .hero-orbita .o5  { bottom: 5%; left: 4%; }
+}
 
 /* === Iconos coloridos por área (oportunidades) === */
 .opp-icon { width: 56px; height: 56px; border-radius: 14px; display: grid; place-items: center; flex-shrink: 0; position: relative; overflow: hidden; }
@@ -306,21 +321,20 @@ h1 .em-y { color: var(--yellow); }
 .preset-bar .preset-btn:hover { background: var(--yellow-bright); transform: translateY(-2px); box-shadow: 0 12px 28px rgba(229,187,85,0.45); }
 
 /* === Footer Powered by Grupo Digitals === */
-.foot { padding: 50px clamp(20px, 5vw, 60px) 30px; border-top: 1px solid var(--line); position: relative; z-index: 5; }
-.foot-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 24px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
-.foot-grupo { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
-.foot-grupo .lbl { font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--text-mute); font-weight: 600; }
-.foot-grupo img { height: 42px; width: auto; opacity: 0.9; transition: opacity 0.3s; }
+.foot { padding: 56px clamp(20px, 5vw, 60px) 36px; border-top: 1px solid var(--line); position: relative; z-index: 5; }
+.foot-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 28px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+.foot-grupo { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+.foot-grupo .lbl { font-family: var(--f-title); font-size: 18px; letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-mute); font-weight: 400; }
+.foot-grupo img { height: 88px; width: auto; opacity: 0.95; transition: opacity 0.3s; }
 .foot-grupo img:hover { opacity: 1; }
-.foot-copy { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.10em; color: var(--text-mute); }
-.foot-copy a { color: var(--cyan-bright); }
+.foot-copy { font-family: var(--f-body); font-size: 12.5px; letter-spacing: 0.02em; color: var(--text-soft); font-weight: 500; }
+.foot-copy a { color: var(--cyan-bright); font-weight: 600; }
 .foot-copy a:hover { color: var(--yellow); }
-@media (max-width: 600px) { .foot-inner { justify-content: center; text-align: center; } }
+@media (max-width: 600px) { .foot-inner { justify-content: center; text-align: center; } .foot-grupo img { height: 68px; } }
 </style>
 </head>
 <body>
 
-<div class="bg-grid"></div>
 <div class="bg-orb-c"></div>
 <div class="bg-orb-y"></div>
 
@@ -340,6 +354,17 @@ h1 .em-y { color: var(--yellow); }
   <span class="holo" style="top: -30px; right: -60px;">UPGRADE</span>
   <span class="holo yellow" style="bottom: -70px; left: -50px;">BUILD</span>
 
+  <!-- Orbita LLMs flotando alrededor del título -->
+  <div class="hero-orbita" aria-hidden="true">
+    <div class="o-logo o1"><img src="assets/orbita/chatgpt.png" alt="ChatGPT"/></div>
+    <div class="o-logo o2"><img src="assets/orbita/claude.png" alt="Claude"/></div>
+    <div class="o-logo o3"><img src="assets/orbita/gemini.png" alt="Gemini"/></div>
+    <div class="o-logo o4"><img src="assets/orbita/google.png" alt="Google"/></div>
+    <div class="o-logo o5"><img src="assets/orbita/google-ads.png" alt="Google Ads"/></div>
+    <div class="o-logo o6"><img src="assets/orbita/meta.png" alt="Meta"/></div>
+    <div class="o-logo o7"><img src="assets/orbita/elevenlabs.png" alt="ElevenLabs"/></div>
+  </div>
+
   <span class="eyebrow">Diagnóstico web 2026 · 100% gratuito</span>
   <h1>Tu web bajo<br/>estándares de <span class="em-y">hoy</span><br/><span class="em">+ calculadora</span> de upgrade.</h1>
   <p class="hero-sub">Analizamos tu web frente a <strong>los estándares 2026 de UX, motion, AI-readiness y stack</strong>. Detectamos oportunidades específicas para diferenciarte de tu competencia y <strong>calculamos el precio exacto</strong> de tu rebuild según el nivel de complejidad que necesites.</p>
@@ -352,18 +377,6 @@ h1 .em-y { color: var(--yellow); }
       <img src="assets/partners/cert-linkedin.webp" alt="LinkedIn Marketing Partner" title="LinkedIn Marketing Partner"/>
       <img src="assets/partners/cert-shopify.webp" alt="Shopify Partner" title="Shopify Partner"/>
     </div>
-  </div>
-
-  <!-- Orbita LLMs + Google · IA que analizamos -->
-  <div class="orbita-wrap">
-    <div class="orbita-core"><strong>AI<br/>SCAN</strong></div>
-    <div class="orbita-logo float1" style="top: 5%; left: 8%;"><img src="assets/orbita/chatgpt.png" alt="ChatGPT"/><span class="orbita-tag">ChatGPT</span></div>
-    <div class="orbita-logo float2" style="top: 12%; right: 10%;"><img src="assets/orbita/claude.png" alt="Claude"/><span class="orbita-tag">Claude</span></div>
-    <div class="orbita-logo float3" style="bottom: 18%; left: 4%;"><img src="assets/orbita/gemini.png" alt="Gemini"/><span class="orbita-tag">Gemini</span></div>
-    <div class="orbita-logo float1" style="top: 28%; left: 25%;"><img src="assets/orbita/google.png" alt="Google"/><span class="orbita-tag">Google</span></div>
-    <div class="orbita-logo float2" style="bottom: 5%; right: 18%;"><img src="assets/orbita/google-ads.png" alt="Google Ads"/><span class="orbita-tag">Google Ads</span></div>
-    <div class="orbita-logo float3" style="top: 32%; right: 28%;"><img src="assets/orbita/meta.png" alt="Meta"/><span class="orbita-tag">Meta</span></div>
-    <div class="orbita-logo float1" style="bottom: 22%; right: 4%;"><img src="assets/orbita/elevenlabs.png" alt="ElevenLabs"/><span class="orbita-tag">ElevenLabs</span></div>
   </div>
 
   <div class="stepper">
