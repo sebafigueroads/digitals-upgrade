@@ -160,6 +160,10 @@ async function diagnose(url) {
     recommendation = 'rebuild';
   }
 
+  // === Industria heurística para mencionar competencia real ===
+  const industryGuess = guessIndustry(html, url);
+  const competitors = competitorsByIndustry(industryGuess);
+
   return {
     url,
     modernScore,
@@ -167,8 +171,100 @@ async function diagnose(url) {
     signals,
     opportunities: opportunities.slice(0, 12),
     verdict,
-    recommendation
+    recommendation,
+    industry: industryGuess,
+    competitors
   };
+}
+
+function guessIndustry(html, url) {
+  const text = (html.toLowerCase() + ' ' + url.toLowerCase());
+  const matches = [];
+  const patterns = [
+    { ind: 'retail / e-commerce',    keys: ['carrito','tienda','agregar al carro','checkout','envío gratis','shopify','woocommerce','catálogo'] },
+    { ind: 'salud / clínica',         keys: ['clínica','medic','salud','consulta','agendar hora','paciente','doctor','dental','estética'] },
+    { ind: 'B2B industrial',          keys: ['industrial','maquinaria','b2b','fábrica','mayorista','distribuidor','planta','grúa','forklift'] },
+    { ind: 'inmobiliaria',            keys: ['departamento','proyecto inmobiliario','venta de casas','arriendo','inmobiliaria','m²','planos'] },
+    { ind: 'restaurante / food',      keys: ['menú','restaurante','pedido','reserva','degustación','vinos','sommelier'] },
+    { ind: 'educación',               keys: ['curso','universidad','colegio','postgrado','diplomado','académic','estudiantes','matrícula'] },
+    { ind: 'servicios profesionales', keys: ['abogad','contador','asesoría legal','estudio jurídico','auditoría','consultor'] },
+    { ind: 'SaaS / tech',             keys: ['saas','plataforma','dashboard','suscripción','api','pricing','startup','software'] },
+    { ind: 'agencia marketing',       keys: ['agencia','marketing digital','paid media','seo','agencia creativa','full service'] },
+    { ind: 'hotel / turismo',         keys: ['hotel','tour','viaje','reserva','habitación','resort','turismo'] },
+    { ind: 'construcción',            keys: ['construcción','obra','arquitect','edificación','remodelación'] }
+  ];
+  for (const p of patterns) {
+    const hits = p.keys.filter(k => text.includes(k)).length;
+    if (hits) matches.push({ ind: p.ind, score: hits });
+  }
+  matches.sort((a, b) => b.score - a.score);
+  return matches[0]?.ind || 'general';
+}
+
+function competitorsByIndustry(ind) {
+  const map = {
+    'retail / e-commerce':       ['Falabella','Paris','Ripley','Mercado Libre','Cencosud','Lippi'],
+    'salud / clínica':            ['Clínica Las Condes','Clínica Alemana','RedSalud','Integramédica','Sonríe'],
+    'B2B industrial':             ['Sodimac Empresa','Construmart','Easy','Komatsu Chile','Salfa'],
+    'inmobiliaria':               ['Toctoc','PortalInmobiliario','Yapo','PropertyFinder','LeBon'],
+    'restaurante / food':         ['Rappi','Uber Eats','PedidosYa','Cornershop','La Costanera'],
+    'educación':                  ['UC','UAndes','UDD','UAI','Crehana','Coursera'],
+    'servicios profesionales':    ['EY','PwC','Deloitte','KPMG','Andersen','Cariola'],
+    'SaaS / tech':                ['Defontana','Bsale','Toteat','Khipu','Pago Express'],
+    'agencia marketing':          ['Wunderman Thompson','VML','BBDO','Ogilvy','Mccann','Prolam'],
+    'hotel / turismo':            ['Booking','Despegar','Atrapalo','Cocha','Andes Hoteles'],
+    'construcción':               ['Salfa','Echeverría Izquierdo','Sigro','Moller','Bezanilla'],
+    'general':                    ['tus principales competidores chilenos']
+  };
+  return map[ind] || map.general;
+}
+
+// === Recomendación de preset basada en diagnose ===
+function recommendPreset(diag) {
+  const op = diag.opportunities || [];
+  const score = diag.modernScore || 50;
+  const has = (key) => op.some(o => o.key === key);
+
+  // Multimedia recomendado
+  let multimedia = 'photo';
+  if (has('threeJs') || has('videoHero')) multimedia = 'aiWow';
+  if (score < 40 && !has('threeJs')) multimedia = 'aiWow';
+  if (op.length > 8) multimedia = 'aiWow';
+
+  // Sections (basado en complexity industry)
+  const ind = diag.industry || 'general';
+  let sections = 'standard';
+  if (['B2B industrial','servicios profesionales','agencia marketing','SaaS / tech'].includes(ind)) sections = 'extended';
+  if (['retail / e-commerce','educación'].includes(ind)) sections = 'full';
+  if (['restaurante / food'].includes(ind)) sections = 'micro';
+
+  // Features auto-selected basados en lo que le falta
+  const features = [];
+  if (has('darkMode'))         features.push('darkLight');
+  if (has('gsap') || has('lenis') || has('scrollTrigger')) features.push('motionLib');
+  if (has('customCursor') || has('tilt3d')) features.push('customCursor');
+  if (has('holos'))            features.push('holos');
+  if (has('schemaOrg') || has('faqPage') || has('llmsTxt') || has('aiBots')) features.push('schemas');
+  // Always-recommended
+  if (!features.includes('motionLib')) features.push('motionLib');
+  if (!features.includes('schemas'))   features.push('schemas');
+  // Add CRM + analytics como default para B2B
+  if (['B2B industrial','servicios profesionales','SaaS / tech','agencia marketing'].includes(ind)) {
+    features.push('crm','analytics','forms');
+  }
+  if (ind === 'retail / e-commerce') features.push('ecom','analytics','crm');
+  if (ind === 'salud / clínica')      features.push('forms','crm','accessibility');
+
+  // Speed
+  let speed = 'optimized';
+  if (score < 35) speed = 'award';
+  if (op.length > 10) speed = 'award';
+
+  // Copy
+  let copy = 'asistido';
+  if (op.length > 10 || score < 30) copy = 'full';
+
+  return { multimedia, sections, features: [...new Set(features)], speed, copy };
 }
 
 function pillarScore(signals, keys) {
@@ -342,6 +438,16 @@ app.post('/api/diagnose', async (req, res) => {
   } catch (e) {
     console.error('[diagnose]', e);
     res.status(400).json({ error: e.message || 'Error procesando la URL' });
+  }
+});
+
+app.post('/api/recommend', (req, res) => {
+  try {
+    const diag = req.body?.diag || {};
+    const preset = recommendPreset(diag);
+    res.json({ preset });
+  } catch (e) {
+    res.status(400).json({ error: e.message });
   }
 });
 
