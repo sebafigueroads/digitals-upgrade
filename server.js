@@ -486,9 +486,8 @@ function buildQuoteEmailHtml({ name, url, total = 0, totalClp = 0, weeks = 0, ti
 <body style="margin:0;padding:0;background:#0d0d0d;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:#f4f4f4;">
 <div style="max-width:640px;margin:0 auto;background:#141414;">
   <div style="padding:32px 36px;border-bottom:1px solid rgba(255,255,255,0.08);">
-    <div style="font-size:28px;font-weight:500;letter-spacing:-0.02em;color:#fff;">Digitals</div>
-    <div style="height:5px;width:130px;background:linear-gradient(90deg,#12809b 0%,#5ec97a 25%,#e5bb55 50%,#e88b3a 75%,#db666a 100%);margin-top:6px;border-radius:2px;"></div>
-    <div style="margin-top:24px;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#7a7a7a;font-weight:600;">Cotización Upgrade · upgrade.digitals.cl</div>
+    <img src="https://upgrade.digitals.cl/assets/logo/digitals-logo.png" alt="Digitals" width="80" height="80" style="display:block;border-radius:10px;"/>
+    <div style="margin-top:22px;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#7a7a7a;font-weight:600;">Cotización Upgrade · upgrade.digitals.cl</div>
   </div>
   <div style="padding:32px 36px;">
     <p style="margin:0 0 16px;color:#cccccc;font-size:15px;line-height:1.6;">${escapeHtml(greet)}, gracias por usar Digitals Upgrade.</p>
