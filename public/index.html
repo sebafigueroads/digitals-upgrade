@@ -60,11 +60,13 @@ input { font: inherit; color: inherit; }
 
 /* Topbar */
 .topbar { position: sticky; top: 0; z-index: 50; padding: 16px clamp(20px, 4vw, 44px); display: flex; justify-content: space-between; align-items: center; background: rgba(13,13,13,0.82); backdrop-filter: blur(18px); border-bottom: 1px solid var(--line); }
-.brand-link { display: flex; align-items: center; gap: 14px; color: var(--text); }
-.logo-digitals { height: 42px; width: auto; display: block; color: var(--text); }
+.brand-link { display: flex; align-items: center; gap: 16px; color: var(--text); }
+.brand-wordmark { display: flex; flex-direction: column; align-items: center; gap: 5px; line-height: 0.9; }
+.brand-word { font-family: var(--f-body); font-weight: 500; font-size: 30px; letter-spacing: -0.02em; color: var(--text); line-height: 1; }
+.brand-bar { display: block; height: 5px; width: 130px; object-fit: cover; object-position: center; image-rendering: -webkit-optimize-contrast; }
 .brand-tag { font-family: var(--f-body); font-size: 11px; font-weight: 700; letter-spacing: 0.10em; color: var(--cyan-bright); text-transform: uppercase; padding-left: 14px; border-left: 1px solid var(--line); margin-left: 4px; }
 .brand-tag strong { color: var(--text); font-weight: 800; display: block; font-size: 12px; margin-bottom: 2px; letter-spacing: 0.04em; }
-@media (max-width: 760px) { .logo-digitals { height: 34px; } .brand-tag { display: none; } }
+@media (max-width: 760px) { .brand-word { font-size: 22px; } .brand-bar { width: 96px; height: 4px; } .brand-tag { display: none; } }
 .topbar-right { display: flex; gap: 18px; align-items: center; font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-mute); }
 .topbar-right .live { display: inline-flex; align-items: center; gap: 7px; color: var(--signal); }
 .topbar-right .live::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 8px var(--signal); animation: pulse 1.6s infinite; }
@@ -273,8 +275,8 @@ h1 .em-y { color: var(--yellow); }
 .stat-shift .bar-row .bar i { display: block; height: 100%; border-radius: 100px; transition: width 1.4s var(--ease); }
 .stat-shift .bar-row.seo .bar i  { background: var(--cyan-bright); width: 0; }
 .stat-shift .bar-row.aeo .bar i  { background: linear-gradient(90deg, var(--yellow), var(--red)); width: 0; }
-.stat-shift.active .bar-row.seo .bar i { width: 60%; }
-.stat-shift.active .bar-row.aeo .bar i { width: 95%; }
+.stat-shift.active .bar-row.seo .bar i { width: 28%; }
+.stat-shift.active .bar-row.aeo .bar i { width: 92%; }
 .stat-shift .bar-row .pct { font-size: 10.5px; min-width: 38px; color: var(--text); font-weight: 700; }
 
 /* === Partner badges (hero) · más spacing del stepper === */
@@ -364,11 +366,10 @@ h1 .em-y { color: var(--yellow); }
 
 <header class="topbar">
   <a href="/" class="brand-link" aria-label="Digitals · Agencia & Consultora">
-    <svg class="logo-digitals" viewBox="0 0 240 76" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path d="M4 6 L8 6 L8 70 L232 70 L232 6 L236 6 L236 74 L4 74 Z M4 6 L60 6 M180 6 L236 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square"/>
-      <text x="120" y="46" font-family="Montserrat, sans-serif" font-size="36" font-weight="500" fill="currentColor" text-anchor="middle" letter-spacing="-0.018em">Digitals</text>
-      <text x="120" y="64" font-family="Montserrat, sans-serif" font-size="8.5" font-weight="500" fill="currentColor" text-anchor="middle" letter-spacing="0.06em">Agencia &amp; Consultora</text>
-    </svg>
+    <span class="brand-wordmark">
+      <span class="brand-word">Digitals</span>
+      <img class="brand-bar" src="assets/logo/digitals-bar.png" alt=""/>
+    </span>
     <span class="brand-tag"><strong>Upgrade</strong>AI Diagnosis · Build Calculator</span>
   </a>
   <div class="topbar-right">
@@ -398,15 +399,15 @@ h1 .em-y { color: var(--yellow); }
 
   <div class="stat-shift" id="statShift">
     <div class="stat-shift-grid">
-      <div class="num">+540<small>%</small></div>
+      <div class="num">3.2<small>×</small></div>
       <div class="body">
-        <strong>AEO &amp; GEO crecieron 540% en 2 años</strong>
-        <span>El SEO clásico no desapareció — sigue siendo crítico para Google. Pero la <strong style="color:var(--yellow);">búsqueda con IA</strong> (ChatGPT, Claude, Gemini, Perplexity) ya mueve <strong style="color:var(--yellow);">1 de cada 4 consultas</strong> en mercados maduros. Quien no optimiza para AEO/GEO/LLMO hoy, queda fuera del nuevo discovery layer.</span>
+        <strong>Una web 2026 vende 3.2× más que una de 2019</strong>
+        <span>El <strong style="color:var(--yellow);">88% de tus visitantes</strong> nunca vuelve tras una mala experiencia móvil (Forrester). Google ya penaliza Core Web Vitals lentos — el <strong>SEO</strong> sigue vivo, pero exige estándares 2026. Y las IAs (<strong style="color:var(--yellow);">ChatGPT, Claude, Gemini, Meta&nbsp;AI, Perplexity</strong>) solo citan webs con estructura técnica fresca — eso es <strong>AEO/GEO</strong>. Tu web 2019 ya no vende, ni posiciona, ni se cita.</span>
       </div>
       <div class="bars">
-        <div class="bar-row seo"><span class="lbl">SEO</span><span class="bar"><i></i></span><span class="pct">60%</span></div>
-        <div class="bar-row aeo"><span class="lbl">AEO/GEO</span><span class="bar"><i></i></span><span class="pct">95%</span></div>
-        <div style="font-family: var(--f-body); font-size: 9.5px; letter-spacing: 0.10em; color: var(--text-mute); font-weight: 600; text-transform: uppercase; margin-top: 4px;">Importancia para 2026</div>
+        <div class="bar-row seo"><span class="lbl">Web 2019</span><span class="bar"><i></i></span><span class="pct">28%</span></div>
+        <div class="bar-row aeo"><span class="lbl">Web 2026</span><span class="bar"><i></i></span><span class="pct">92%</span></div>
+        <div style="font-family: var(--f-body); font-size: 9.5px; letter-spacing: 0.10em; color: var(--text-mute); font-weight: 600; text-transform: uppercase; margin-top: 4px;">Conversión + citabilidad IA</div>
       </div>
     </div>
   </div>
@@ -841,7 +842,11 @@ $('#leadForm').addEventListener('submit', async (e) => {
         name, email, phone,
         url: state.lastDiag?.url || '',
         total: state.lastQuote?.finalUsd || 0,
-        config: { multimedia: state.multimedia, sections: state.sections, features: state.features, speed: state.speed, copy: state.copy, tier: state.lastQuote?.tier?.code }
+        totalClp: state.lastQuote?.finalClp || 0,
+        weeks: state.lastQuote?.timelineWeeks || 0,
+        tier: state.lastQuote?.tier?.label || state.lastQuote?.tier?.code || '',
+        config: { multimedia: state.multimedia, sections: state.sections, features: state.features, speed: state.speed, copy: state.copy, tier: state.lastQuote?.tier?.code },
+        diagnose: state.lastDiag ? { url: state.lastDiag.url, score: state.lastDiag.score, industry: state.lastDiag.industry, opportunities: (state.lastDiag.opportunities || []).slice(0, 8) } : null
       })
     });
     if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error(d.error || 'Error'); }

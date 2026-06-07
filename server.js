@@ -13,10 +13,11 @@ app.use(express.json({ limit: '300kb' }));
 const PORT = process.env.PORT || 3000;
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-const HAPEE_PIT          = process.env.HAPEE_PIT || 'pit-60913a06-a23c-4de4-9f60-7b484dac855b';
-const HAPEE_LOCATION_ID  = process.env.HAPEE_LOCATION_ID || 'tPqE8ZXL6r8h5e9k0SGQ';
+const HAPEE_PIT          = process.env.HAPEE_PIT || '';
+const HAPEE_LOCATION_ID  = process.env.HAPEE_LOCATION_ID || '';
 const HAPEE_API_BASE     = process.env.HAPEE_API_BASE || 'https://services.leadconnectorhq.com';
 const HAPEE_API_VERSION  = process.env.HAPEE_API_VERSION || '2021-07-28';
+if (!HAPEE_PIT || !HAPEE_LOCATION_ID) console.warn('[upgrade-digitals] WARN: HAPEE_PIT / HAPEE_LOCATION_ID no configurados — /api/lead fallará.');
 
 const USD_TO_CLP = 950; // base estimación, valor configurable
 
@@ -461,9 +462,99 @@ app.post('/api/quote', (req, res) => {
   }
 });
 
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+
+function buildQuoteEmailHtml({ name, url, total = 0, totalClp = 0, weeks = 0, tier = '', config = {}, diagnose = null }) {
+  const greet = (name || '').trim().split(/\s+/)[0] || 'Hola';
+  const cfg = config || {};
+  const sections = Object.entries(cfg).filter(([k, v]) => v && k !== 'features').map(([k, v]) => `<tr><td style="padding:6px 0;color:#aaaaaa;font-size:13px;text-transform:capitalize;">${escapeHtml(k)}</td><td style="text-align:right;color:#fff;font-size:13px;font-weight:600;">${escapeHtml(typeof v === 'string' ? v : String(v))}</td></tr>`).join('');
+  const features = Array.isArray(cfg.features) ? cfg.features : [];
+  const diagBlock = diagnose && diagnose.opportunities ? `
+    <div style="margin:24px 0 12px;">
+      <div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#7a7a7a;font-weight:700;margin-bottom:12px;">Oportunidades detectadas en tu web actual</div>
+      ${(diagnose.opportunities || []).slice(0,6).map(op => `
+        <div style="background:#0d0d0d;border-left:3px solid #e5bb55;border-radius:6px;padding:12px 16px;margin-bottom:8px;">
+          <div style="font-size:9.5px;letter-spacing:0.22em;text-transform:uppercase;color:#e5bb55;font-weight:700;margin-bottom:4px;">${escapeHtml(op.area || '')}</div>
+          <div style="font-size:13.5px;color:#fff;font-weight:600;">${escapeHtml(op.title || '')}</div>
+          ${op.tip ? `<div style="font-size:12px;color:#aaa;line-height:1.55;margin-top:4px;">${escapeHtml(op.tip)}</div>` : ''}
+        </div>`).join('')}
+    </div>` : '';
+
+  return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cotización Upgrade Web · Digitals</title></head>
+<body style="margin:0;padding:0;background:#0d0d0d;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;color:#f4f4f4;">
+<div style="max-width:640px;margin:0 auto;background:#141414;">
+  <div style="padding:32px 36px;border-bottom:1px solid rgba(255,255,255,0.08);">
+    <div style="font-size:28px;font-weight:500;letter-spacing:-0.02em;color:#fff;">Digitals</div>
+    <div style="height:5px;width:130px;background:linear-gradient(90deg,#12809b 0%,#5ec97a 25%,#e5bb55 50%,#e88b3a 75%,#db666a 100%);margin-top:6px;border-radius:2px;"></div>
+    <div style="margin-top:24px;font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#7a7a7a;font-weight:600;">Cotización Upgrade · upgrade.digitals.cl</div>
+  </div>
+  <div style="padding:32px 36px;">
+    <p style="margin:0 0 16px;color:#cccccc;font-size:15px;line-height:1.6;">${escapeHtml(greet)}, gracias por usar Digitals Upgrade.</p>
+    <p style="margin:0 0 24px;color:#cccccc;font-size:15px;line-height:1.6;">Esta es la cotización del rebuild de <a href="${escapeHtml(url)}" style="color:#12c1d8;text-decoration:none;">${escapeHtml(url)}</a> según la configuración que armaste:</p>
+    <div style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.10);border-radius:14px;padding:28px;text-align:center;margin:24px 0;">
+      <div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#7a7a7a;font-weight:600;margin-bottom:8px;">Inversión estimada</div>
+      <div style="font-family:'Bebas Neue','Arial Narrow',sans-serif;font-size:64px;line-height:1;font-weight:400;color:#e5bb55;letter-spacing:0.01em;">USD ${Number(total).toLocaleString('es-CL')}</div>
+      <div style="font-size:13px;color:#999999;margin-top:6px;">≈ CLP ${Number(totalClp).toLocaleString('es-CL')}</div>
+      <div style="margin-top:14px;font-size:12px;color:#aaa;">Tier <strong style="color:#fff;">${escapeHtml(tier)}</strong> · ${weeks} semanas estimadas</div>
+    </div>
+    ${sections ? `<div style="background:#0d0d0d;border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:18px 22px;margin:20px 0;">
+      <div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#7a7a7a;font-weight:700;margin-bottom:10px;">Configuración</div>
+      <table role="presentation" style="width:100%;border-collapse:collapse;">${sections}</table>
+    </div>` : ''}
+    ${features.length ? `<div style="margin:20px 0;">
+      <div style="font-size:11px;letter-spacing:0.22em;text-transform:uppercase;color:#7a7a7a;font-weight:700;margin-bottom:10px;">Features incluidas</div>
+      ${features.map(f => `<span style="display:inline-block;background:rgba(18,128,155,0.14);color:#12c1d8;padding:5px 11px;border-radius:100px;font-size:11.5px;font-weight:600;margin:3px 4px 3px 0;">${escapeHtml(f)}</span>`).join('')}
+    </div>` : ''}
+    ${diagBlock}
+    <div style="background:linear-gradient(135deg,rgba(18,128,155,0.14),rgba(229,187,85,0.10));border:1px solid rgba(18,128,155,0.32);border-radius:14px;padding:24px;margin:32px 0 16px;">
+      <div style="font-size:13px;color:#cccccc;line-height:1.6;">Un especialista de Digitals te contactará dentro de las próximas 24h hábiles para coordinar una reunión, validar el alcance final y armar el contrato.</div>
+      <div style="margin-top:18px;">
+        <a href="https://digitals.cl" style="display:inline-block;background:#12809b;color:#fff;text-decoration:none;padding:13px 26px;border-radius:100px;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;">Conocer más sobre Digitals →</a>
+      </div>
+    </div>
+  </div>
+  <div style="padding:24px 36px;border-top:1px solid rgba(255,255,255,0.08);text-align:center;color:#7a7a7a;font-size:11px;line-height:1.7;">
+    <div>Digitals · agencia de marketing digital + IA en Chile</div>
+    <div style="margin-top:4px;"><a href="https://digitals.cl" style="color:#7a7a7a;text-decoration:none;">digitals.cl</a> · <a href="https://upgrade.digitals.cl" style="color:#7a7a7a;text-decoration:none;">upgrade.digitals.cl</a></div>
+  </div>
+</div>
+</body></html>`;
+}
+
+async function sendQuoteEmail({ contactId, name, url, total, totalClp, weeks, tier, config, diagnose }) {
+  if (!contactId) return { sent: false, reason: 'no-contact-id' };
+  const html = buildQuoteEmailHtml({ name, url, total, totalClp, weeks, tier, config, diagnose });
+  const subject = `Tu cotización Upgrade Web · USD ${Number(total).toLocaleString('es-CL')} · Digitals`;
+  const body = {
+    type: 'Email',
+    contactId,
+    subject,
+    html,
+    emailFrom: process.env.HAPEE_EMAIL_FROM || 'hola@digitals.cl'
+  };
+  const r = await fetchWithTimeout(`${HAPEE_API_BASE}/conversations/messages`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${HAPEE_PIT}`,
+      'Version': HAPEE_API_VERSION,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  }, 20000);
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) {
+    console.error('[hapee email upgrade error]', r.status, d);
+    return { sent: false, reason: 'hapee-error', status: r.status };
+  }
+  return { sent: true, messageId: d?.messageId || d?.id || null };
+}
+
 app.post('/api/lead', async (req, res) => {
   try {
-    const { name = '', email = '', phone = '', url = '', total = 0, config = {} } = req.body || {};
+    const { name = '', email = '', phone = '', url = '', total = 0, totalClp = 0, weeks = 0, tier = '', config = {}, diagnose = null } = req.body || {};
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: 'Email inválido' });
     const [firstName, ...rest] = name.trim().split(/\s+/);
     const payload = {
@@ -492,7 +583,16 @@ app.post('/api/lead', async (req, res) => {
     }, 12000);
     const d = await r.json().catch(() => ({}));
     if (!r.ok) return res.status(502).json({ error: 'No se pudo crear el contacto', detail: d?.message });
-    res.json({ ok: true, contactId: d?.contact?.id || d?.id });
+    const contactId = d?.contact?.id || d?.id || null;
+
+    let emailResult = { sent: false };
+    try {
+      emailResult = await sendQuoteEmail({ contactId, name, url, total, totalClp, weeks, tier, config, diagnose });
+    } catch (emailErr) {
+      console.error('[upgrade email send error]', emailErr);
+      emailResult = { sent: false, reason: 'exception', detail: emailErr.message };
+    }
+    res.json({ ok: true, contactId, email: emailResult });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
