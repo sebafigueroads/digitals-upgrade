@@ -1,0 +1,10 @@
+{
+  "name": "upgrade-digitals",
+  "version": "1.0.0",
+  "description": "Digitals Upgrade · diagnóstico UX/UI con IA + calculadora de rebuild web · award-winning",
+  "main": "server.js",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": { "start": "node server.js" },
+  "dependencies": { "express": "^4.21.2" }
+}

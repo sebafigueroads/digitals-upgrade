@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Digitals Upgrade · Diagnóstico UX/UI con IA + calculadora de rebuild web</title>
+<meta name="description" content="Analiza tu web bajo estándares 2026: UX, motion, AI-readiness. Configurador interactivo de tu nueva web con precio estimado. Powered by Digitals · agencia de marketing digital + IA en Chile."/>
+<meta name="robots" content="index, follow"/>
+<link rel="canonical" href="https://upgrade.digitals.cl/"/>
+
+<meta property="og:type" content="website"/>
+<meta property="og:title" content="Digitals Upgrade · Diagnóstico web 2026 + calculadora rebuild"/>
+<meta property="og:description" content="Tu web bajo estándares modernos · oportunidades con IA · calculadora de cotización award-winning"/>
+<meta property="og:locale" content="es_CL"/>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:         #0d0d0d;
+  --bg-2:       #141414;
+  --bg-3:       #1a1a1a;
+  --cyan:       #12809b;
+  --cyan-bright:#1aa5c9;
+  --yellow:     #e5bb55;
+  --yellow-bright:#f5d27a;
+  --red:        #db666a;
+  --red-bright: #ff8082;
+  --text:       #ffffff;
+  --text-soft:  #b8b8b8;
+  --text-mute:  #888888;
+  --line:       rgba(255,255,255,0.06);
+  --line-strong:rgba(255,255,255,0.16);
+  --signal:     #4DE38C;
+
+  --f-title:    'Bebas Neue', system-ui, sans-serif;
+  --f-body:     'Montserrat', system-ui, sans-serif;
+  --f-mono:     'JetBrains Mono', ui-monospace, monospace;
+
+  --ease:       cubic-bezier(0.19, 1, 0.22, 1);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); color: var(--text); font-family: var(--f-body); -webkit-font-smoothing: antialiased; line-height: 1.55; }
+body { min-height: 100vh; overflow-x: hidden; font-weight: 400; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; cursor: pointer; background: none; border: 0; }
+input { font: inherit; color: inherit; }
+::selection { background: var(--cyan); color: var(--text); }
+
+/* BG */
+.bg-grid { position: fixed; inset: 0; z-index: 1; pointer-events: none; background-image: linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse 100% 90% at center, black 30%, transparent); -webkit-mask-image: radial-gradient(ellipse 100% 90% at center, black 30%, transparent); }
+.bg-orb-c { position: fixed; top: -25%; right: -15%; width: 70vw; height: 70vw; max-width: 1100px; max-height: 1100px; border-radius: 50%; background: radial-gradient(ellipse, rgba(18,128,155,0.24), transparent 60%); filter: blur(90px); pointer-events: none; z-index: 0; }
+.bg-orb-y { position: fixed; bottom: -25%; left: -15%; width: 55vw; height: 55vw; max-width: 900px; max-height: 900px; border-radius: 50%; background: radial-gradient(ellipse, rgba(229,187,85,0.10), transparent 60%); filter: blur(90px); pointer-events: none; z-index: 0; }
+
+.holo { position: absolute; font-family: var(--f-title); font-size: clamp(8rem, 18vw, 18rem); line-height: 0.82; color: transparent; -webkit-text-stroke: 2px rgba(18,128,155,0.16); opacity: 0.55; z-index: 0; pointer-events: none; user-select: none; text-transform: uppercase; letter-spacing: 0.02em; }
+.holo.yellow { -webkit-text-stroke-color: rgba(229,187,85,0.14); }
+
+/* Topbar */
+.topbar { position: sticky; top: 0; z-index: 50; padding: 16px clamp(20px, 4vw, 44px); display: flex; justify-content: space-between; align-items: center; background: rgba(13,13,13,0.82); backdrop-filter: blur(18px); border-bottom: 1px solid var(--line); }
+.brand-logo { font-family: var(--f-title); font-size: 26px; letter-spacing: 0.08em; color: var(--text); text-transform: uppercase; line-height: 1; }
+.brand-logo .dot { color: var(--cyan); font-size: 18px; }
+.brand-sub { font-family: var(--f-mono); font-size: 9.5px; font-weight: 500; letter-spacing: 0.28em; color: var(--text-mute); text-transform: uppercase; padding-left: 14px; border-left: 1px solid var(--line); margin-left: 12px; }
+@media (max-width: 600px) { .brand-sub { display: none; } }
+.topbar-right { display: flex; gap: 18px; align-items: center; font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-mute); }
+.topbar-right .live { display: inline-flex; align-items: center; gap: 7px; color: var(--signal); }
+.topbar-right .live::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 8px var(--signal); animation: pulse 1.6s infinite; }
+@keyframes pulse { 50% { opacity: 0.35; } }
+@media (max-width: 540px) { .topbar-right .live { display: none; } }
+
+/* Hero */
+.hero { position: relative; z-index: 5; padding: clamp(60px, 9vh, 110px) clamp(20px, 5vw, 60px) clamp(40px, 6vh, 80px); max-width: 1180px; margin: 0 auto; text-align: center; overflow: hidden; }
+.eyebrow { display: inline-flex; align-items: center; gap: 10px; padding: 7px 16px; background: rgba(229,187,85,0.10); border: 1px solid rgba(229,187,85,0.36); font-family: var(--f-mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.26em; color: var(--yellow); text-transform: uppercase; border-radius: 100px; margin-bottom: 32px; }
+.eyebrow::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--yellow); box-shadow: 0 0 10px var(--yellow); animation: pulse 1.8s infinite; }
+h1 { font-family: var(--f-title); font-weight: 400; font-size: clamp(3rem, 9vw, 8rem); line-height: 0.92; letter-spacing: 0.005em; margin-bottom: 28px; text-transform: uppercase; }
+h1 .em { color: var(--cyan-bright); }
+h1 .em-y { color: var(--yellow); }
+.hero-sub { font-size: clamp(1rem, 1.4vw, 1.18rem); line-height: 1.6; color: var(--text-soft); max-width: 66ch; margin: 0 auto 44px; font-weight: 400; }
+.hero-sub strong { color: var(--text); font-weight: 600; }
+
+/* === STEP 1 · Diagnose form === */
+.stepper { display: flex; justify-content: center; gap: 0; margin-bottom: 40px; flex-wrap: wrap; }
+.step-pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; font-family: var(--f-mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-mute); border: 1px solid var(--line); border-radius: 100px; transition: all 0.3s var(--ease); margin: 0 4px; }
+.step-pill .num { font-family: var(--f-title); font-size: 16px; color: var(--text-mute); line-height: 1; }
+.step-pill.active { color: var(--cyan-bright); border-color: rgba(18,128,155,0.50); background: rgba(18,128,155,0.08); }
+.step-pill.active .num { color: var(--cyan-bright); }
+.step-pill.done { color: var(--signal); border-color: rgba(77,227,140,0.50); }
+.step-pill.done .num { color: var(--signal); }
+@media (max-width: 700px) { .step-pill { padding: 6px 12px; font-size: 9.5px; letter-spacing: 0.16em; } .step-pill .num { font-size: 14px; } }
+
+.scan-form { display: flex; gap: 10px; max-width: 660px; margin: 0 auto; padding: 6px; background: var(--bg-2); border: 1px solid var(--line-strong); border-radius: 100px; transition: border-color 0.3s, box-shadow 0.3s; }
+.scan-form:focus-within { border-color: var(--cyan); box-shadow: 0 0 0 4px rgba(18,128,155,0.18); }
+.scan-form input { flex: 1; padding: 14px 24px; background: transparent; border: 0; outline: 0; color: var(--text); font-weight: 500; font-size: 15px; }
+.scan-form input::placeholder { color: var(--text-mute); }
+.scan-form button { padding: 14px 30px; background: var(--yellow); color: var(--bg); font-family: var(--f-body); font-weight: 800; font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; border-radius: 100px; transition: all 0.3s var(--ease); white-space: nowrap; }
+.scan-form button:hover:not(:disabled) { background: var(--yellow-bright); transform: translateY(-1px); box-shadow: 0 12px 28px rgba(229,187,85,0.40); }
+.scan-form button:disabled { opacity: 0.4; cursor: not-allowed; }
+.skip-link { display: inline-block; margin-top: 18px; font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.18em; color: var(--text-mute); text-transform: uppercase; cursor: pointer; }
+.skip-link:hover { color: var(--cyan-bright); }
+.skip-link::after { content: ' →'; }
+
+.loader { display: none; max-width: 660px; margin: 32px auto 0; padding: 18px 24px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 16px; }
+.loader.active { display: block; }
+.loader-msg { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.12em; color: var(--text-soft); margin-bottom: 12px; display: flex; align-items: center; gap: 12px; text-transform: uppercase; font-weight: 500; }
+.loader-msg::before { content: ''; width: 14px; height: 14px; border: 2px solid var(--line-strong); border-top-color: var(--cyan-bright); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-bar { height: 3px; background: var(--bg-3); border-radius: 100px; overflow: hidden; }
+.loader-bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--cyan), var(--yellow)); animation: load 18s linear forwards; }
+@keyframes load { from { width: 0; } to { width: 96%; } }
+
+/* === STEP 2 · Diagnosis result === */
+.diag { display: none; max-width: 1240px; margin: 0 auto; padding: clamp(30px, 5vh, 60px) clamp(20px, 4vw, 40px); position: relative; z-index: 5; }
+.diag.active { display: block; }
+
+.diag-head { display: grid; grid-template-columns: auto 1fr; gap: 36px; align-items: center; margin-bottom: 36px; padding-bottom: 32px; border-bottom: 1px solid var(--line); }
+@media (max-width: 760px) { .diag-head { grid-template-columns: 1fr; gap: 22px; } }
+.diag-score { position: relative; width: 160px; height: 160px; flex-shrink: 0; }
+.diag-score svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.diag-score .track { fill: none; stroke: var(--bg-3); stroke-width: 8; }
+.diag-score .bar { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dasharray 1.4s var(--ease); }
+.diag-score.good .bar { stroke: var(--signal); filter: drop-shadow(0 0 14px var(--signal)); }
+.diag-score.med .bar  { stroke: var(--yellow); filter: drop-shadow(0 0 14px var(--yellow)); }
+.diag-score.bad .bar  { stroke: var(--red); filter: drop-shadow(0 0 14px var(--red)); }
+.diag-score .lbl { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.diag-score .lbl strong { font-family: var(--f-title); font-weight: 400; font-size: 4.2rem; line-height: 0.9; }
+.diag-score .lbl span { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-mute); margin-top: 4px; font-weight: 600; }
+
+.diag-info .url { font-family: var(--f-mono); font-size: 12px; color: var(--cyan-bright); margin-bottom: 10px; word-break: break-all; font-weight: 500; }
+.diag-info h2 { font-family: var(--f-title); font-weight: 400; font-size: clamp(1.8rem, 3.5vw, 2.6rem); line-height: 1.1; letter-spacing: 0.01em; text-transform: uppercase; margin-bottom: 12px; }
+.diag-info p { color: var(--text-soft); font-size: 0.96rem; line-height: 1.6; }
+
+/* Pillars */
+.pillars { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 44px; }
+@media (max-width: 1080px) { .pillars { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 540px) { .pillars { grid-template-columns: repeat(2, 1fr); } }
+.pillar { padding: 18px 18px 16px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px; }
+.pillar .lbl { font-family: var(--f-mono); font-size: 9.5px; letter-spacing: 0.20em; text-transform: uppercase; color: var(--text-mute); margin-bottom: 10px; font-weight: 600; }
+.pillar .val { font-family: var(--f-title); font-weight: 400; font-size: 2.4rem; line-height: 0.95; letter-spacing: 0.01em; }
+.pillar .val small { font-size: 0.36em; font-family: var(--f-body); font-weight: 600; color: var(--text-mute); margin-left: 4px; letter-spacing: 0; }
+.pillar .bar { margin-top: 10px; height: 3px; background: var(--bg-3); border-radius: 100px; overflow: hidden; }
+.pillar .bar > i { display: block; height: 100%; border-radius: 100px; }
+.pillar.good .val { color: var(--signal); } .pillar.good .bar > i { background: var(--signal); }
+.pillar.med .val  { color: var(--yellow);  } .pillar.med .bar > i  { background: var(--yellow); }
+.pillar.bad .val  { color: var(--red);     } .pillar.bad .bar > i  { background: var(--red); }
+
+.section-h { display: flex; align-items: center; gap: 16px; margin: 56px 0 22px; }
+.section-h .num { font-family: var(--f-mono); font-size: 10.5px; font-weight: 700; letter-spacing: 0.28em; color: var(--cyan-bright); padding: 6px 12px; border: 1px solid rgba(18,128,155,0.36); border-radius: 100px; }
+.section-h h3 { font-family: var(--f-title); font-weight: 400; font-size: clamp(1.4rem, 2.6vw, 2rem); letter-spacing: 0.01em; text-transform: uppercase; }
+
+/* Opportunities */
+.opps { display: grid; gap: 12px; }
+.opp { padding: 20px 24px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 14px; display: grid; grid-template-columns: auto 1fr auto; gap: 22px; align-items: center; transition: transform 0.3s var(--ease), border-color 0.3s, box-shadow 0.3s; }
+@media (max-width: 760px) { .opp { grid-template-columns: 1fr; gap: 14px; } }
+.opp:hover { transform: translateY(-2px); border-color: rgba(229,187,85,0.32); box-shadow: 0 18px 36px -16px rgba(229,187,85,0.18); }
+.opp .ico { width: 48px; height: 48px; background: rgba(18,128,155,0.12); border: 1px solid rgba(18,128,155,0.32); border-radius: 12px; display: grid; place-items: center; color: var(--cyan-bright); font-family: var(--f-title); font-size: 24px; flex-shrink: 0; }
+.opp .body { min-width: 0; }
+.opp .area { font-family: var(--f-mono); font-size: 9.5px; font-weight: 700; letter-spacing: 0.22em; color: var(--text-mute); text-transform: uppercase; margin-bottom: 6px; }
+.opp h4 { font-family: var(--f-title); font-weight: 400; font-size: 1.35rem; line-height: 1.1; letter-spacing: 0.01em; text-transform: uppercase; margin-bottom: 8px; }
+.opp p { font-size: 13.5px; color: var(--text-soft); line-height: 1.55; margin-bottom: 6px; }
+.opp .benefit { font-family: var(--f-mono); font-size: 11.5px; color: var(--yellow); font-weight: 600; letter-spacing: 0.06em; }
+.opp .benefit::before { content: '↗ '; }
+.opp .impact { font-family: var(--f-title); font-size: 2rem; color: var(--yellow); line-height: 1; padding: 0 14px; border-left: 1px solid var(--line); }
+@media (max-width: 760px) { .opp .impact { border-left: 0; border-top: 1px solid var(--line); padding: 14px 0 0; text-align: center; } }
+
+.diff-card { margin-top: 36px; padding: 28px 32px; background: linear-gradient(135deg, rgba(18,128,155,0.16), rgba(229,187,85,0.08)); border: 1px solid rgba(18,128,155,0.32); border-radius: 18px; position: relative; overflow: hidden; }
+.diff-card::before { content: ''; position: absolute; top: -50%; right: -10%; width: 380px; height: 380px; background: radial-gradient(circle, rgba(229,187,85,0.20), transparent 70%); border-radius: 50%; }
+.diff-card .kicker { font-family: var(--f-mono); font-size: 10.5px; font-weight: 600; letter-spacing: 0.28em; color: var(--yellow); text-transform: uppercase; margin-bottom: 14px; display: inline-block; position: relative; }
+.diff-card h4 { font-family: var(--f-title); font-weight: 400; font-size: clamp(1.6rem, 3vw, 2.2rem); line-height: 1.1; letter-spacing: 0.01em; text-transform: uppercase; margin-bottom: 14px; position: relative; }
+.diff-card p { color: var(--text-soft); font-size: 0.96rem; line-height: 1.65; max-width: 64ch; position: relative; }
+
+/* CTA continue */
+.continue-cta { margin-top: 50px; text-align: center; }
+.continue-cta button { padding: 18px 38px; background: var(--yellow); color: var(--bg); font-family: var(--f-body); font-weight: 800; font-size: 13px; letter-spacing: 0.20em; text-transform: uppercase; border-radius: 100px; transition: all 0.3s var(--ease); display: inline-flex; align-items: center; gap: 10px; }
+.continue-cta button:hover { background: var(--yellow-bright); transform: translateY(-2px); box-shadow: 0 18px 40px rgba(229,187,85,0.45); }
+.continue-cta button::after { content: '↓'; transition: transform 0.3s; }
+.continue-cta button:hover::after { transform: translateY(3px); }
+
+/* === STEP 3 · Configurator (Calculator) === */
+.config { display: none; max-width: 1280px; margin: 0 auto; padding: clamp(40px, 6vh, 70px) clamp(20px, 4vw, 40px); position: relative; z-index: 5; }
+.config.active { display: block; }
+.config-head { text-align: center; margin-bottom: 50px; }
+.config-head .eyebrow { background: rgba(18,128,155,0.10); border-color: rgba(18,128,155,0.36); color: var(--cyan-bright); }
+.config-head .eyebrow::before { background: var(--cyan-bright); box-shadow: 0 0 10px var(--cyan-bright); }
+.config-head h2 { font-family: var(--f-title); font-weight: 400; font-size: clamp(2.2rem, 5vw, 4rem); line-height: 0.96; letter-spacing: 0.005em; text-transform: uppercase; margin-bottom: 18px; }
+.config-head h2 em { font-family: var(--f-title); font-style: normal; color: var(--cyan-bright); }
+.config-head p { color: var(--text-soft); font-size: 1rem; line-height: 1.6; max-width: 64ch; margin: 0 auto; }
+
+.config-layout { display: grid; grid-template-columns: 1fr 380px; gap: 26px; align-items: start; }
+@media (max-width: 1080px) { .config-layout { grid-template-columns: 1fr; } }
+
+.config-main { display: grid; gap: 22px; }
+.config-group { padding: 28px 28px 24px; background: var(--bg-2); border: 1px solid var(--line); border-radius: 18px; }
+.config-group h3 { font-family: var(--f-title); font-weight: 400; font-size: 1.55rem; line-height: 1; letter-spacing: 0.01em; text-transform: uppercase; margin-bottom: 6px; }
+.config-group .help { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.18em; color: var(--text-mute); text-transform: uppercase; margin-bottom: 22px; font-weight: 500; }
+
+.options { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+.opt { position: relative; padding: 16px 18px 14px; background: var(--bg-3); border: 1.5px solid var(--line); border-radius: 12px; cursor: pointer; transition: all 0.3s var(--ease); }
+.opt:hover { border-color: rgba(229,187,85,0.36); transform: translateY(-2px); }
+.opt.active { border-color: var(--cyan-bright); background: rgba(18,128,155,0.10); box-shadow: 0 0 0 3px rgba(18,128,155,0.15); }
+.opt.active::after { content: '✓'; position: absolute; top: 10px; right: 12px; width: 22px; height: 22px; background: var(--cyan-bright); color: var(--bg); border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 12px; }
+.opt .label { font-family: var(--f-body); font-weight: 700; font-size: 13.5px; color: var(--text); margin-bottom: 4px; line-height: 1.25; }
+.opt .desc { font-size: 11.5px; color: var(--text-mute); line-height: 1.4; margin-bottom: 8px; min-height: 30px; }
+.opt .price { font-family: var(--f-title); font-weight: 400; font-size: 1.5rem; line-height: 1; color: var(--yellow); }
+.opt .price small { font-family: var(--f-body); font-weight: 600; font-size: 0.42em; color: var(--text-mute); margin-left: 3px; letter-spacing: 0.04em; }
+.opt.free .price { color: var(--signal); }
+
+/* Sidebar (summary) */
+.summary { position: sticky; top: 80px; padding: 30px 26px; background: linear-gradient(160deg, var(--bg-2) 0%, rgba(18,128,155,0.06) 100%); border: 1px solid var(--line-strong); border-radius: 22px; }
+.summary h3 { font-family: var(--f-title); font-weight: 400; font-size: 1.4rem; line-height: 1; letter-spacing: 0.01em; text-transform: uppercase; margin-bottom: 8px; }
+.summary .recom { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px; background: var(--yellow); color: var(--bg); font-family: var(--f-mono); font-size: 9.5px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; border-radius: 100px; margin-bottom: 22px; }
+.summary .items { display: grid; gap: 8px; margin-bottom: 22px; }
+.summary .item { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; padding: 8px 0; font-size: 12.5px; color: var(--text-soft); line-height: 1.45; border-bottom: 1px dashed var(--line); }
+.summary .item:last-child { border-bottom: 0; }
+.summary .item .n { flex: 1; }
+.summary .item .v { font-family: var(--f-mono); font-weight: 600; color: var(--cyan-bright); white-space: nowrap; }
+.summary .empty { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.18em; color: var(--text-mute); text-transform: uppercase; padding: 12px 0; }
+.summary .totals { padding-top: 18px; border-top: 1px solid var(--line); display: grid; gap: 8px; margin-bottom: 22px; }
+.summary .row { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--f-mono); font-size: 11.5px; letter-spacing: 0.04em; color: var(--text-mute); text-transform: uppercase; }
+.summary .row span:last-child { color: var(--text); font-weight: 600; }
+.summary .row.discount span:last-child { color: var(--signal); }
+.summary .row.final { font-family: var(--f-body); font-size: 13.5px; text-transform: none; letter-spacing: 0; color: var(--text); font-weight: 700; padding-top: 10px; border-top: 1px solid var(--line); margin-top: 4px; }
+.summary .row.final .price { font-family: var(--f-title); font-weight: 400; font-size: 2.4rem; line-height: 1; color: var(--yellow); letter-spacing: 0.01em; }
+.summary .row.final .price small { font-family: var(--f-body); font-weight: 600; font-size: 0.34em; color: var(--text-mute); margin-left: 5px; letter-spacing: 0.04em; }
+.summary .row .clp { font-family: var(--f-mono); font-size: 10.5px; color: var(--text-mute); font-weight: 500; }
+.summary .timeline { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-soft); padding: 12px 14px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; margin-bottom: 22px; text-align: center; font-weight: 500; }
+.summary .timeline strong { color: var(--cyan-bright); }
+.summary .cta { width: 100%; padding: 16px 22px; background: var(--yellow); color: var(--bg); font-family: var(--f-body); font-weight: 800; font-size: 12px; letter-spacing: 0.20em; text-transform: uppercase; border-radius: 100px; transition: all 0.3s var(--ease); }
+.summary .cta:hover { background: var(--yellow-bright); transform: translateY(-2px); box-shadow: 0 14px 28px rgba(229,187,85,0.45); }
+.summary .cta:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.summary .note { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.16em; color: var(--text-mute); margin-top: 14px; text-align: center; text-transform: uppercase; line-height: 1.5; }
+
+/* Modal lead */
+.modal-bg { position: fixed; inset: 0; background: rgba(13,13,13,0.86); backdrop-filter: blur(10px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+.modal-bg.active { display: flex; }
+.modal { width: 100%; max-width: 480px; background: var(--bg-2); border: 1px solid var(--line-strong); border-radius: 22px; padding: 32px 30px; position: relative; }
+.modal .close { position: absolute; top: 16px; right: 16px; width: 32px; height: 32px; display: grid; place-items: center; color: var(--text-mute); font-size: 24px; line-height: 1; }
+.modal h3 { font-family: var(--f-title); font-weight: 400; font-size: 1.8rem; letter-spacing: 0.01em; margin-bottom: 10px; text-transform: uppercase; }
+.modal p { color: var(--text-soft); font-size: 0.92rem; margin-bottom: 22px; }
+.modal label { display: block; font-family: var(--f-mono); font-size: 9.5px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-mute); margin-bottom: 8px; margin-top: 14px; }
+.modal input { width: 100%; padding: 13px 16px; background: var(--bg); border: 1px solid var(--line); border-radius: 10px; color: var(--text); font-size: 14px; outline: 0; transition: border-color 0.25s; font-family: var(--f-body); }
+.modal input:focus { border-color: var(--cyan-bright); }
+.modal .submit { width: 100%; margin-top: 24px; padding: 15px 22px; background: var(--yellow); color: var(--bg); font-family: var(--f-body); font-weight: 800; font-size: 12px; letter-spacing: 0.20em; text-transform: uppercase; border-radius: 100px; transition: all 0.3s var(--ease); }
+.modal .submit:hover:not(:disabled) { transform: translateY(-2px); background: var(--yellow-bright); }
+.modal .success { display: none; text-align: center; padding: 20px 0; }
+.modal .success svg { width: 60px; height: 60px; color: var(--signal); margin-bottom: 14px; }
+.modal.done .form { display: none; }
+.modal.done .success { display: block; }
+
+.error { display: none; max-width: 660px; margin: 30px auto 0; padding: 18px 22px; background: rgba(219,102,106,0.10); border: 1px solid rgba(219,102,106,0.36); border-radius: 14px; color: #FFC2C2; font-size: 13.5px; }
+.error.active { display: block; }
+
+.foot { padding: 44px clamp(20px, 5vw, 60px); border-top: 1px solid var(--line); position: relative; z-index: 5; text-align: center; font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.10em; color: var(--text-mute); }
+.foot a { color: var(--cyan-bright); }
+.foot a:hover { color: var(--yellow); }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-orb-c"></div>
+<div class="bg-orb-y"></div>
+
+<header class="topbar">
+  <a href="/" style="display:flex; align-items:center;">
+    <span class="brand-logo">DIGITALS<span class="dot">·</span>UPGRADE</span>
+    <span class="brand-sub">AI Diagnosis · Build Calculator · 2026</span>
+  </a>
+  <div class="topbar-right">
+    <span class="live">DIAGNOSIS LIVE</span>
+    <a href="https://digitals.cl" target="_blank" rel="noopener">digitals.cl ↗</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <span class="holo" style="top: -30px; right: -60px;">UPGRADE</span>
+  <span class="holo yellow" style="bottom: -70px; left: -50px;">BUILD</span>
+
+  <span class="eyebrow">Diagnóstico web 2026 · 100% gratuito</span>
+  <h1>Tu web bajo<br/>estándares de <span class="em-y">hoy</span><br/><span class="em">+ calculadora</span> de upgrade.</h1>
+  <p class="hero-sub">Analizamos tu web frente a <strong>los estándares 2026 de UX, motion, AI-readiness y stack</strong>. Detectamos oportunidades específicas para diferenciarte de tu competencia y <strong>calculamos el precio exacto</strong> de tu rebuild según el nivel de complejidad que necesites.</p>
+
+  <div class="stepper">
+    <div class="step-pill active"><span class="num">01</span> Diagnóstico</div>
+    <div class="step-pill"><span class="num">02</span> Oportunidades</div>
+    <div class="step-pill"><span class="num">03</span> Configura</div>
+    <div class="step-pill"><span class="num">04</span> Cotización</div>
+  </div>
+
+  <form class="scan-form" id="diagForm">
+    <input type="text" id="urlInput" placeholder="tudominio.cl" autocomplete="off" required/>
+    <button type="submit" id="diagBtn">Diagnosticar →</button>
+  </form>
+  <span class="skip-link" id="skipDiag">o salta directo a la calculadora</span>
+
+  <div class="loader" id="loader">
+    <div class="loader-msg" id="loaderMsg">Analizando UX, motion, AI-readiness y stack…</div>
+    <div class="loader-bar"><i></i></div>
+  </div>
+  <div class="error" id="error"></div>
+</section>
+
+<!-- STEP 2 · DIAGNOSIS RESULT -->
+<section class="diag" id="diag">
+  <div class="diag-head">
+    <div class="diag-score" id="diagScore">
+      <svg viewBox="0 0 120 120">
+        <circle class="track" cx="60" cy="60" r="52"/>
+        <circle class="bar" id="scoreBar" cx="60" cy="60" r="52" stroke-dasharray="0 327"/>
+      </svg>
+      <div class="lbl"><strong id="scoreVal">0</strong><span>MODERN SCORE</span></div>
+    </div>
+    <div class="diag-info">
+      <div class="url" id="diagUrl"></div>
+      <h2 id="diagTitle">Diagnóstico listo</h2>
+      <p id="diagVerdict"></p>
+    </div>
+  </div>
+
+  <div class="pillars" id="pillars"></div>
+
+  <div class="section-h"><span class="num">02</span><h3>Oportunidades de mejora · priorizadas con IA</h3></div>
+  <div class="opps" id="opps"></div>
+
+  <div class="diff-card" id="diffCard">
+    <span class="kicker">— Cómo te diferencias de tu competencia</span>
+    <h4 id="diffTitle">Tu mayor oportunidad ahora.</h4>
+    <p id="diffText"></p>
+  </div>
+
+  <div class="continue-cta">
+    <button id="goConfig">Calcula tu rebuild ideal</button>
+  </div>
+</section>
+
+<!-- STEP 3 · CONFIGURATOR -->
+<section class="config" id="config">
+  <div class="config-head">
+    <span class="eyebrow">Configurador · ajusta y mira el precio en tiempo real</span>
+    <h2>Diseña tu <em>nueva web</em><br/>como prefieras.</h2>
+    <p>Elige multimedia, secciones, features y nivel de performance. La cotización se actualiza automáticamente — incluye un descuento del 8% si tomas el paquete completo.</p>
+  </div>
+
+  <div class="config-layout">
+    <div class="config-main" id="configMain">
+      <!-- Multimedia -->
+      <div class="config-group">
+        <h3>Multimedia / hero</h3>
+        <div class="help">— Qué quieres en el hero de tu nueva web</div>
+        <div class="options" data-group="multimedia"></div>
+      </div>
+      <!-- Sections -->
+      <div class="config-group">
+        <h3>Tamaño / secciones</h3>
+        <div class="help">— Cuántas secciones tendrá tu web</div>
+        <div class="options" data-group="sections"></div>
+      </div>
+      <!-- Features -->
+      <div class="config-group">
+        <h3>Features award-winning</h3>
+        <div class="help">— Add-ons modernos · multi-select</div>
+        <div class="options" data-group="features" data-multi="1"></div>
+      </div>
+      <!-- Speed -->
+      <div class="config-group">
+        <h3>Nivel de performance</h3>
+        <div class="help">— Qué tan rápida quieres que sea</div>
+        <div class="options" data-group="speed"></div>
+      </div>
+      <!-- Copy -->
+      <div class="config-group">
+        <h3>Contenido / copy</h3>
+        <div class="help">— Quién escribe los textos</div>
+        <div class="options" data-group="copy"></div>
+      </div>
+    </div>
+
+    <aside class="summary" id="summary">
+      <h3>Tu cotización</h3>
+      <span class="recom" id="recomTier">Calculando…</span>
+      <div class="items" id="summaryItems"><div class="empty">Selecciona opciones para ver el desglose</div></div>
+      <div class="totals" id="summaryTotals" style="display:none;">
+        <div class="row"><span>Subtotal</span><span id="subtotalUsd">$0 USD</span></div>
+        <div class="row discount"><span>Descuento 8%</span><span id="discountUsd">- $0</span></div>
+        <div class="row final"><span>Total estimado</span><span class="price" id="finalUsd">$0<small>USD</small></span></div>
+        <div class="row" style="margin-top:-4px;"><span></span><span class="clp" id="finalClp">CLP $0</span></div>
+      </div>
+      <div class="timeline" id="timeline" style="display:none;"></div>
+      <button class="cta" id="getQuote" disabled>Recibir cotización formal</button>
+      <div class="note">Esta cotización es estimativa · el alcance final se ajusta tras una llamada de descubrimiento.</div>
+    </aside>
+  </div>
+</section>
+
+<!-- MODAL LEAD -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal" id="modal">
+    <button class="close" id="modalClose" type="button">×</button>
+    <div class="form">
+      <h3>Recibe tu cotización formal</h3>
+      <p>Te enviamos el detalle por email y un experto de Digitals te contacta para alinear el alcance final. Sin compromiso.</p>
+      <form id="leadForm">
+        <label>Nombre y apellido</label>
+        <input type="text" id="leadName" required/>
+        <label>Email</label>
+        <input type="email" id="leadEmail" required/>
+        <label>WhatsApp (opcional)</label>
+        <input type="tel" id="leadPhone" placeholder="+56 9 …"/>
+        <button type="submit" class="submit" id="leadSubmit">Enviar cotización</button>
+      </form>
+    </div>
+    <div class="success">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto; display: block;"><path d="M20 6 9 17l-5-5"/></svg>
+      <h3>¡Listo!</h3>
+      <p>La cotización detallada te llegará al email en minutos. Un experto de Digitals te contactará dentro de 24h hábiles.</p>
+    </div>
+  </div>
+</div>
+
+<footer class="foot">
+  © 2026 · Powered by <a href="https://digitals.cl" target="_blank" rel="noopener">Digitals</a> · Agencia de marketing digital + IA · Chile
+</footer>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const $$ = (s) => document.querySelectorAll(s);
+
+/* === Pricing catalog (mirror del server.js para evitar latency en cada cambio) === */
+const PRICING = {
+  multimedia: {
+    text:        { name: 'Solo texto editorial',           usd: 0,    desc: 'Editorial puro, foco en tipografía' },
+    photo:       { name: 'Fotografía',                     usd: 450,  desc: 'Fotos optimizadas + lazy loading' },
+    video:       { name: 'Video hero',                     usd: 850,  desc: 'Video MP4 optimizado + poster' },
+    aiWow:       { name: 'Efecto WOW con IA',              usd: 1900, desc: 'Imágenes/video generativo Higgsfield + holos' },
+    threeD:      { name: '3D / WebGL',                     usd: 3200, desc: 'Three.js o Spline · top vs competencia' }
+  },
+  sections: {
+    landing:   { name: '1 sección', usd: 800,  desc: 'Landing simple · 1 propósito' },
+    micro:     { name: '3-5',       usd: 1800, desc: 'Micro-site · funnel corto' },
+    standard:  { name: '6-10',      usd: 3200, desc: 'Web estándar' },
+    extended:  { name: '11-15',     usd: 5200, desc: 'Web extendida con casos' },
+    full:      { name: '16+',       usd: 7800, desc: 'Web completa multi-página' }
+  },
+  features: {
+    darkLight:    { name: 'Dark / Light mode',                usd: 320,  desc: 'Toggle con localStorage' },
+    motionLib:    { name: 'GSAP + Lenis smooth scroll',       usd: 480,  desc: 'Stack motion premium' },
+    customCursor: { name: 'Custom cursor + 3D tilt',          usd: 280,  desc: 'Cursor signature + cards tilt' },
+    holos:        { name: 'Tipografía giant outlined',        usd: 240,  desc: 'Holos signature digitals' },
+    multi:        { name: 'Multi-idioma',                     usd: 600,  desc: 'es / en' },
+    cms:          { name: 'CMS editable',                     usd: 1400, desc: 'Cliente edita sin código' },
+    crm:          { name: 'Integración CRM',                  usd: 900,  desc: 'Hapee / HubSpot / Salesforce' },
+    ecom:         { name: 'E-commerce Shopify',               usd: 1800, desc: 'Tienda integrada' },
+    blog:         { name: 'Blog editorial',                   usd: 750,  desc: 'Artículos + paid SEO' },
+    analytics:    { name: 'GA4 + Tag Manager',                usd: 650,  desc: '+ Looker dashboard' },
+    schemas:      { name: 'AEO/GEO completo',                 usd: 380,  desc: 'Schema + FAQPage + llms.txt' },
+    accessibility:{ name: 'Accesibilidad WCAG AA',            usd: 480,  desc: 'WCAG 2.2 AA' },
+    forms:        { name: 'Formularios + workflows',          usd: 420,  desc: 'Captura + automatización' },
+    chatbot:      { name: 'Chatbot IA',                       usd: 1400, desc: 'Claude / GPT personalizado' }
+  },
+  speed: {
+    standard:  { name: 'Estándar',         usd: 0,    desc: 'Optimización básica' },
+    optimized: { name: 'Optimizada',       usd: 480,  desc: 'CWV verde · LCP <2.5s' },
+    award:     { name: 'Award-winning',    usd: 1200, desc: 'Lighthouse 95+ · LCP <1.5s' }
+  },
+  copy: {
+    cliente:  { name: 'Cliente',     usd: 0,    desc: 'Tú escribes' },
+    asistido: { name: 'Asistido',    usd: 450,  desc: 'Editamos lo que tienes' },
+    full:     { name: 'Completo',    usd: 1200, desc: 'Copywriting de cero' }
+  }
+};
+const USD_TO_CLP = 950;
+
+const state = { multimedia: null, sections: null, features: [], speed: null, copy: null, lastDiag: null, lastQuote: null };
+
+/* === Render options === */
+function renderOptions() {
+  for (const [group, items] of Object.entries(PRICING)) {
+    const container = document.querySelector(`.options[data-group="${group}"]`);
+    if (!container) continue;
+    const multi = container.dataset.multi === '1';
+    container.innerHTML = Object.entries(items).map(([key, val]) => `
+      <div class="opt ${val.usd === 0 ? 'free' : ''}" data-group="${group}" data-key="${key}">
+        <div class="label">${val.name}</div>
+        <div class="desc">${val.desc || ''}</div>
+        <div class="price">${val.usd === 0 ? 'Incluido' : '$' + val.usd.toLocaleString('en-US')}<small>${val.usd === 0 ? '' : 'USD'}</small></div>
+      </div>
+    `).join('');
+    container.querySelectorAll('.opt').forEach(el => el.addEventListener('click', () => {
+      const g = el.dataset.group, k = el.dataset.key;
+      if (multi) {
+        const idx = state.features.indexOf(k);
+        if (idx >= 0) state.features.splice(idx, 1);
+        else state.features.push(k);
+      } else {
+        state[g] = state[g] === k ? null : k;
+      }
+      updateUI();
+      updateQuote();
+    }));
+  }
+}
+
+function updateUI() {
+  document.querySelectorAll('.options').forEach(c => {
+    const g = c.dataset.group;
+    c.querySelectorAll('.opt').forEach(el => {
+      const k = el.dataset.key;
+      const active = c.dataset.multi === '1' ? state.features.includes(k) : state[g] === k;
+      el.classList.toggle('active', active);
+    });
+  });
+}
+
+function updateQuote() {
+  const items = [];
+  let total = 0;
+  let timelineWeeks = 2;
+  const push = (g, k) => {
+    const p = PRICING[g]?.[k];
+    if (!p) return;
+    items.push({ name: p.name, usd: p.usd });
+    total += p.usd;
+  };
+  if (state.multimedia) { push('multimedia', state.multimedia); timelineWeeks += {threeD: 3, aiWow: 2, video: 1}[state.multimedia] || 0; }
+  if (state.sections)   { push('sections', state.sections);     timelineWeeks += {landing: 0, micro: 1, standard: 2, extended: 4, full: 6}[state.sections] || 2; }
+  if (state.speed)      { push('speed', state.speed); }
+  if (state.copy)       { push('copy', state.copy);             timelineWeeks += state.copy === 'full' ? 2 : state.copy === 'asistido' ? 1 : 0; }
+  state.features.forEach(f => { push('features', f); timelineWeeks += 0.5; });
+
+  // tier recomendado
+  let tier;
+  if (total < 2500)       tier = { name: 'Landing Express', code: 'express' };
+  else if (total < 5500)  tier = { name: 'Web Pro', code: 'pro' };
+  else if (total < 11000) tier = { name: 'Web Premium', code: 'premium' };
+  else                    tier = { name: 'Award-winning Build', code: 'award' };
+
+  // UI
+  const sumItems = $('#summaryItems');
+  const sumTotals = $('#summaryTotals');
+  const ctaBtn = $('#getQuote');
+  const timelineEl = $('#timeline');
+
+  if (!items.length) {
+    sumItems.innerHTML = '<div class="empty">Selecciona opciones para ver el desglose</div>';
+    sumTotals.style.display = 'none';
+    timelineEl.style.display = 'none';
+    ctaBtn.disabled = true;
+    $('#recomTier').textContent = 'Calculando…';
+    return;
+  }
+
+  sumItems.innerHTML = items.map(i => `<div class="item"><span class="n">${i.name}</span><span class="v">${i.usd === 0 ? 'Incluido' : '$' + i.usd.toLocaleString('en-US')}</span></div>`).join('');
+  const finalUsd = Math.round(total * 0.92);
+  const discountUsd = total - finalUsd;
+  const finalClp = Math.round(finalUsd * USD_TO_CLP);
+
+  $('#subtotalUsd').textContent = '$' + total.toLocaleString('en-US') + ' USD';
+  $('#discountUsd').textContent = '- $' + discountUsd.toLocaleString('en-US');
+  $('#finalUsd').innerHTML = '$' + finalUsd.toLocaleString('en-US') + '<small>USD</small>';
+  $('#finalClp').textContent = 'CLP $' + finalClp.toLocaleString('es-CL');
+  $('#recomTier').textContent = 'PLAN ' + tier.name;
+  timelineEl.innerHTML = `Timeline estimado · <strong>${Math.round(timelineWeeks)} semanas</strong>`;
+
+  sumTotals.style.display = 'grid';
+  timelineEl.style.display = 'block';
+  ctaBtn.disabled = false;
+
+  state.lastQuote = { items, subtotalUsd: total, finalUsd, finalClp, timelineWeeks, tier };
+}
+
+/* === Diagnose === */
+$('#diagForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const url = $('#urlInput').value.trim();
+  if (!url) return;
+  $('#error').classList.remove('active');
+  $('#loader').classList.add('active');
+  $('#diagBtn').disabled = true;
+  try {
+    const r = await fetch('/api/diagnose', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ url }) });
+    const d = await r.json();
+    if (!r.ok || d.error) throw new Error(d.error || 'Error');
+    renderDiag(d);
+  } catch (err) {
+    $('#loader').classList.remove('active');
+    $('#error').textContent = err.message || 'Error procesando la URL';
+    $('#error').classList.add('active');
+  } finally {
+    $('#diagBtn').disabled = false;
+  }
+});
+
+function renderDiag(d) {
+  state.lastDiag = d;
+  const score = d.modernScore || 0;
+  const band = score >= 70 ? 'good' : score >= 40 ? 'med' : 'bad';
+  $('#diagScore').className = 'diag-score ' + band;
+  $('#scoreVal').textContent = score;
+  const c = 2 * Math.PI * 52;
+  $('#scoreBar').setAttribute('stroke-dasharray', (c * score / 100) + ' ' + c);
+
+  $('#diagUrl').textContent = d.url;
+  $('#diagTitle').textContent = d.recommendation === 'rebuild' ? 'Tu web necesita un REBUILD' :
+                                d.recommendation === 'redesign' ? 'Tu web necesita un REDISEÑO' :
+                                d.recommendation === 'upgrade' ? 'Tu web necesita un UPGRADE' :
+                                'Tu web está casi al día — refresh táctico';
+  $('#diagVerdict').textContent = d.verdict;
+
+  // Pillars
+  const pillars = $('#pillars');
+  pillars.innerHTML = Object.entries(d.pillars).map(([name, val]) => {
+    const b = val >= 70 ? 'good' : val >= 40 ? 'med' : 'bad';
+    return `<div class="pillar ${b}"><div class="lbl">${name}</div><div class="val">${val}<small>/100</small></div><div class="bar"><i style="width:${val}%"></i></div></div>`;
+  }).join('');
+
+  // Opportunities
+  const opps = $('#opps');
+  opps.innerHTML = (d.opportunities || []).map(o => `
+    <div class="opp">
+      <div class="ico">${o.area[0]}</div>
+      <div class="body">
+        <div class="area">${o.area}</div>
+        <h4>${o.label}</h4>
+        <p>${o.why || ''}</p>
+        ${o.benefit ? `<div class="benefit">${o.benefit}</div>` : ''}
+      </div>
+      <div class="impact">+${o.weight}</div>
+    </div>
+  `).join('');
+
+  // Diferenciación
+  const diff = $('#diffCard');
+  const top3 = (d.opportunities || []).slice(0, 3).map(o => o.label).join(' · ');
+  $('#diffTitle').textContent = `Cómo te diferencias: ${(d.opportunities[0]?.label || 'stack moderno')}.`;
+  $('#diffText').textContent = `Implementando ${top3 || 'estas 3 mejoras'}, tu web va a estar en el top 10% de tu industria en términos de stack moderno + AI-readiness. La mayoría de tus competidores siguen en stack 2018-2020 sin Schema.org rico, sin motion premium, sin estándares LLMO. Ese gap es tu mayor diferenciador comercial hoy.`;
+
+  $('#loader').classList.remove('active');
+  $('#hero').style.display = 'none';
+  $('#diag').classList.add('active');
+  $('#diag').scrollIntoView({ behavior: 'smooth' });
+}
+
+/* === Skip + go-to-config === */
+$('#skipDiag').addEventListener('click', () => {
+  $('#hero').style.display = 'none';
+  $('#config').classList.add('active');
+  $('#config').scrollIntoView({ behavior: 'smooth' });
+});
+$('#goConfig').addEventListener('click', () => {
+  $('#config').classList.add('active');
+  $('#config').scrollIntoView({ behavior: 'smooth' });
+});
+
+/* === Lead === */
+const modalBg = $('#modalBg');
+const modal = $('#modal');
+$('#getQuote').addEventListener('click', () => modalBg.classList.add('active'));
+$('#modalClose').addEventListener('click', () => modalBg.classList.remove('active'));
+modalBg.addEventListener('click', (e) => { if (e.target === modalBg) modalBg.classList.remove('active'); });
+
+$('#leadForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = $('#leadName').value.trim();
+  const email = $('#leadEmail').value.trim();
+  const phone = $('#leadPhone').value.trim();
+  const submitBtn = $('#leadSubmit');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Enviando…';
+  try {
+    const r = await fetch('/api/lead', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name, email, phone,
+        url: state.lastDiag?.url || '',
+        total: state.lastQuote?.finalUsd || 0,
+        config: { multimedia: state.multimedia, sections: state.sections, features: state.features, speed: state.speed, copy: state.copy, tier: state.lastQuote?.tier?.code }
+      })
+    });
+    if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error(d.error || 'Error'); }
+    modal.classList.add('done');
+  } catch (err) {
+    alert('Error: ' + err.message);
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Enviar cotización';
+  }
+});
+
+renderOptions();
+</script>
+</body>
+</html>
